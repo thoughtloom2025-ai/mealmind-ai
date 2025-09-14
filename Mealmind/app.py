@@ -29,3 +29,7 @@ app.include_router(notifications.router)
 app.include_router(tokens.router)
 app.include_router(subscription.router)
 app.include_router(google_fit.router)
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="127.0.0.1", port=8000)

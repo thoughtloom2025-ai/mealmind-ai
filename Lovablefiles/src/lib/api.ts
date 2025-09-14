@@ -74,8 +74,10 @@ export interface CreatePlanResponse {
   plan_id: number;
 }
 
+const API_BASE_URL = `https://${window.location.hostname}:8000`;
+
 export const getUserPlans = async (): Promise<MealPlan[]> => {
-  const response = await fetch(`http://localhost:8000/plans/?user_id=1`);
+  const response = await fetch(`${API_BASE_URL}/plans/?user_id=1`);
   if (!response.ok) {
     throw new Error('Failed to fetch meal plans');
   }
@@ -84,7 +86,7 @@ export const getUserPlans = async (): Promise<MealPlan[]> => {
 
 export const getPlanDetails = async (planId: string): Promise<MealPlan> => {
   console.log("API - Fetching plan details for ID:", planId);
-  const response = await fetch(`http://localhost:8000/plans/${planId}`);
+  const response = await fetch(`${API_BASE_URL}/plans/${planId}`);
   console.log("API - Response status:", response.status);
   
   if (!response.ok) {
@@ -127,7 +129,7 @@ interface CreateMealPlanParams {
 }
 
 export const createMealPlan = async (mealPlanData: CreateMealPlanParams): Promise<MealPlan> => {
-    const response = await fetch('http://localhost:8000/plans/', {
+    const response = await fetch(`${API_BASE_URL}/plans/`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -161,7 +163,7 @@ export const createMealPlanNew = async (planData: CreatePlanData): Promise<Creat
     activity_level: planData.activity_level || "moderate"
   };
 
-  const response = await fetch('http://localhost:8000/plans/create', {
+  const response = await fetch(`${API_BASE_URL}/plans/create`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
