@@ -1,52 +1,28 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Brain, Eye, EyeOff, Loader2, CheckCircle } from "lucide-react";
+import { Brain, Loader2, CheckCircle } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthService } from "@/lib/auth";
 import Navbar from "@/components/Navbar";
 import { FcGoogle } from "react-icons/fc"; // Import Google icon
 
 const SignupPage = () => {
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-    confirmPassword: "",
-    name: "",
-  });
-  const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (formData.password !== formData.confirmPassword) {
-      alert("Passwords don't match!");
-      return;
-    }
-
-    setLoading(true);
-
+  const handleGoogleSignup = async () => {
+    setGoogleLoading(true);
     try {
-      await AuthService.signup({
-        email: formData.email,
-        password: formData.password,
-        name: formData.name,
-      });
+      // Assuming AuthService.googleLogin initiates the OAuth flow and handles redirection or token exchange
+      await AuthService.googleLogin(); 
       navigate("/dashboard");
     } catch (error) {
-      console.error("Signup error:", error);
+      console.error("Google signup error:", error);
+      // Handle error display to user if necessary
     } finally {
-      setLoading(false);
+      setGoogleLoading(false);
     }
-  };
-
-  const handleGoogleSignup = () => {
-    // Redirect to Google OAuth flow
-    window.location.href = `${import.meta.env.VITE_API_URL}/auth/google`;
   };
 
   return (
@@ -100,141 +76,54 @@ const SignupPage = () => {
               </div>
               <CardTitle className="text-2xl font-bold">Create Your Account</CardTitle>
               <CardDescription>
-                Start your journey to better health today
+                Start your journey to better health today with Google
               </CardDescription>
             </CardHeader>
 
-            <form onSubmit={handleSubmit}>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Full Name</Label>
-                  <Input
-                    id="name"
-                    type="text"
-                    placeholder="Enter your full name"
-                    value={formData.name}
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      name: e.target.value
-                    })}
-                  />
-                </div>
+            <CardContent className="space-y-6">
+              <div className="text-center text-sm text-gray-600">
+                We use Google OAuth for secure and easy account creation. 
+                Your Google profile information will be used to personalize your experience.
+              </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="Enter your email"
-                    value={formData.email}
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      email: e.target.value
-                    })}
-                    required
-                  />
-                </div>
+              <div className="text-xs text-gray-600 text-center">
+                By creating an account, you agree to our{" "}
+                <Link to="/terms" className="text-primary hover:underline">
+                  Terms of Service
+                </Link>{" "}
+                and{" "}
+                <Link to="/privacy" className="text-primary hover:underline">
+                  Privacy Policy
+                </Link>
+              </div>
+            </CardContent>
 
-                <div className="space-y-2">
-                  <Label htmlFor="password">Password</Label>
-                  <div className="relative">
-                    <Input
-                      id="password"
-                      type={showPassword ? "text" : "password"}
-                      placeholder="Create a password"
-                      value={formData.password}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        password: e.target.value
-                      })}
-                      required
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      {showPassword ? (
-                        <EyeOff className="h-4 w-4 text-gray-400" />
-                      ) : (
-                        <Eye className="h-4 w-4 text-gray-400" />
-                      )}
-                    </Button>
-                  </div>
-                </div>
+            <CardFooter className="flex flex-col space-y-4">
+              <Button
+                className="w-full"
+                onClick={handleGoogleSignup}
+                disabled={googleLoading}
+              >
+                {googleLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Creating account with Google...
+                  </>
+                ) : (
+                  <>
+                    <FcGoogle className="mr-2 h-5 w-5" />
+                    Sign Up with Google
+                  </>
+                )}
+              </Button>
 
-                <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">Confirm Password</Label>
-                  <Input
-                    id="confirmPassword"
-                    type="password"
-                    placeholder="Confirm your password"
-                    value={formData.confirmPassword}
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      confirmPassword: e.target.value
-                    })}
-                    required
-                  />
-                </div>
-
-                <div className="text-xs text-gray-600">
-                  By creating an account, you agree to our{" "}
-                  <Link to="/terms" className="text-primary hover:underline">
-                    Terms of Service
-                  </Link>{" "}
-                  and{" "}
-                  <Link to="/privacy" className="text-primary hover:underline">
-                    Privacy Policy
-                  </Link>
-                </div>
-              </CardContent>
-
-              <CardFooter className="flex flex-col space-y-4">
-                <Button
-                  type="submit"
-                  className="w-full"
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Creating account...
-                    </>
-                  ) : (
-                    "Create Account"
-                  )}
-                </Button>
-
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center" aria-hidden="true">
-                    <div className="w-full border-t border-gray-300" />
-                  </div>
-                  <div className="relative flex justify-center text-sm font-medium leading-6">
-                    <span className="bg-white px-6 text-gray-900">or continue with</span>
-                  </div>
-                </div>
-
-                <Button
-                  variant="outline"
-                  className="w-full flex items-center justify-center gap-2"
-                  onClick={handleGoogleSignup}
-                  disabled={loading}
-                >
-                  <FcGoogle className="h-5 w-5" />
-                  Sign up with Google
-                </Button>
-
-                <div className="text-center text-sm text-gray-600">
-                  Already have an account?{" "}
-                  <Link to="/login" className="text-primary font-semibold hover:underline">
-                    Sign in
-                  </Link>
-                </div>
-              </CardFooter>
-            </form>
+              <div className="text-center text-sm text-gray-600">
+                Already have an account?{" "}
+                <Link to="/login" className="text-primary font-semibold hover:underline">
+                  Sign in
+                </Link>
+              </div>
+            </CardFooter>
           </Card>
         </div>
       </div>

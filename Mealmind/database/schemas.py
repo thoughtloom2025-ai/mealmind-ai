@@ -1,23 +1,7 @@
+
 from pydantic import BaseModel, EmailStr
 from datetime import date
 from typing import Optional, List
-
-# -----------------------
-# ✅ USER AUTH SCHEMAS
-# -----------------------
-
-class UserCreate(BaseModel):
-    email: EmailStr
-    password: str
-
-class UserLogin(BaseModel):
-    email: EmailStr
-    password: str
-
-class TokenResponse(BaseModel):
-    access_token: str
-    token_type: str
-
 
 # -----------------------
 # ✅ PLAN CREATION SCHEMA
