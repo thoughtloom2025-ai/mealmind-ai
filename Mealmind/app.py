@@ -13,9 +13,9 @@ app = FastAPI()
 # CORS (if frontend is calling backend)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Change in prod
+    allow_origins=["http://localhost:5000", "https://*.replit.dev"],  # Production-ready CORS
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["*"],
 )
 
@@ -29,6 +29,10 @@ app.include_router(notifications.router)
 app.include_router(tokens.router)
 app.include_router(subscription.router)
 app.include_router(google_fit.router)
+
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy", "message": "MealMind API is running"}
 
 if __name__ == "__main__":
     import uvicorn

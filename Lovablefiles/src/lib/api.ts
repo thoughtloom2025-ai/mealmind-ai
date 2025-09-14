@@ -74,7 +74,9 @@ export interface CreatePlanResponse {
   plan_id: number;
 }
 
-const API_BASE_URL = `https://${window.location.hostname}:8000`;
+const API_BASE_URL = window.location.hostname.includes('replit.dev') 
+  ? `https://${window.location.hostname.replace('-5000', '-8000')}` 
+  : `http://localhost:8000`;
 
 export const getUserPlans = async (): Promise<MealPlan[]> => {
   const response = await fetch(`${API_BASE_URL}/plans/?user_id=1`);
