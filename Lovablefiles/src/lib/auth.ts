@@ -1,4 +1,5 @@
 
+
 import { toast } from "@/hooks/use-toast";
 
 const API_BASE_URL = "http://localhost:8000";
@@ -141,6 +142,69 @@ export class AuthService {
     }
   }
 
+  static async googleLogin(): Promise<{ user: User; token: string }> {
+    return new Promise((resolve, reject) => {
+      // Load Google API script if not already loaded
+      if (!window.google) {
+        const script = document.createElement('script');
+        script.src = 'https://accounts.google.com/gsi/client';
+        script.onload = () => this.initGoogleAuth(resolve, reject);
+        document.head.appendChild(script);
+      } else {
+        this.initGoogleAuth(resolve, reject);
+      }
+    });
+  }
+
+  private static initGoogleAuth(resolve: Function, reject: Function): void {
+    window.google.accounts.id.initialize({
+      client_id: process.env.GOOGLE_CLIENT_ID || '',
+      callback: async (response: any) => {
+        try {
+          // Send the credential to your backend
+          const backendResponse = await fetch(`${API_BASE_URL}/auth/google-oauth`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ 
+              credential: response.credential 
+            }),
+          });
+
+          if (!backendResponse.ok) {
+            const error = await backendResponse.json();
+            throw new Error(error.detail || 'Google login failed');
+          }
+
+          const result = await backendResponse.json();
+          const token = result.access_token;
+          const user = result.user;
+
+          this.setToken(token);
+          this.setUser(user);
+
+          toast({
+            title: "Login successful!",
+            description: "Welcome to Mealmind AI",
+          });
+
+          resolve({ user, token });
+        } catch (error) {
+          toast({
+            title: "Google login failed",
+            description: error instanceof Error ? error.message : "Please try again",
+            variant: "destructive",
+          });
+          reject(error);
+        }
+      },
+    });
+
+    // Trigger the Google Sign-In flow
+    window.google.accounts.id.prompt();
+  }
+
   static logout(): void {
     this.removeToken();
     toast({
@@ -154,3 +218,11 @@ export class AuthService {
     return token ? { Authorization: `Bearer ${token}` } : {};
   }
 }
+
+// Extend Window interface for Google API
+declare global {
+  interface Window {
+    google: any;
+  }
+}
+

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +7,7 @@ import { Brain, Eye, EyeOff, Loader2, CheckCircle } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthService } from "@/lib/auth";
 import Navbar from "@/components/Navbar";
+import { FcGoogle } from "react-icons/fc"; // Import Google icon
 
 const SignupPage = () => {
   const [formData, setFormData] = useState({
@@ -22,7 +22,7 @@ const SignupPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (formData.password !== formData.confirmPassword) {
       alert("Passwords don't match!");
       return;
@@ -44,10 +44,15 @@ const SignupPage = () => {
     }
   };
 
+  const handleGoogleSignup = () => {
+    // Redirect to Google OAuth flow
+    window.location.href = `${import.meta.env.VITE_API_URL}/auth/google`;
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-white">
       <Navbar />
-      
+
       <div className="flex items-center justify-center min-h-screen pt-16 px-4 sm:px-6 lg:px-8">
         <div className="w-full max-w-4xl grid lg:grid-cols-2 gap-8 items-center">
           {/* Benefits Column */}
@@ -98,7 +103,7 @@ const SignupPage = () => {
                 Start your journey to better health today
               </CardDescription>
             </CardHeader>
-            
+
             <form onSubmit={handleSubmit}>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
@@ -114,7 +119,7 @@ const SignupPage = () => {
                     })}
                   />
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
                   <Input
@@ -129,7 +134,7 @@ const SignupPage = () => {
                     required
                   />
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="password">Password</Label>
                   <div className="relative">
@@ -159,7 +164,7 @@ const SignupPage = () => {
                     </Button>
                   </div>
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="confirmPassword">Confirm Password</Label>
                   <Input
@@ -186,11 +191,11 @@ const SignupPage = () => {
                   </Link>
                 </div>
               </CardContent>
-              
+
               <CardFooter className="flex flex-col space-y-4">
-                <Button 
-                  type="submit" 
-                  className="w-full" 
+                <Button
+                  type="submit"
+                  className="w-full"
                   disabled={loading}
                 >
                   {loading ? (
@@ -202,7 +207,26 @@ const SignupPage = () => {
                     "Create Account"
                   )}
                 </Button>
-                
+
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                    <div className="w-full border-t border-gray-300" />
+                  </div>
+                  <div className="relative flex justify-center text-sm font-medium leading-6">
+                    <span className="bg-white px-6 text-gray-900">or continue with</span>
+                  </div>
+                </div>
+
+                <Button
+                  variant="outline"
+                  className="w-full flex items-center justify-center gap-2"
+                  onClick={handleGoogleSignup}
+                  disabled={loading}
+                >
+                  <FcGoogle className="h-5 w-5" />
+                  Sign up with Google
+                </Button>
+
                 <div className="text-center text-sm text-gray-600">
                   Already have an account?{" "}
                   <Link to="/login" className="text-primary font-semibold hover:underline">
