@@ -72,12 +72,7 @@ const LoginPage = () => {
               )}
             </Button>
 
-            <div className="text-center text-sm text-gray-600">
-              Don't have an account?{" "}
-              <Link to="/signup" className="text-primary font-semibold hover:underline">
-                Sign up for free
-              </Link>
-            </div>
+            
           </CardFooter>
         </Card>
       </div>
